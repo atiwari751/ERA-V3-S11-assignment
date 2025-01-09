@@ -1,4 +1,4 @@
-import regex as re
+import pickle
 
 # Read text from a file
 with open('text_file.txt', 'r', encoding='utf-8') as file:
@@ -6,13 +6,6 @@ with open('text_file.txt', 'r', encoding='utf-8') as file:
 
 tokens = text.encode("utf-8")  # raw bytes
 tokens = list(map(int, tokens))  # convert to a list of integers in range 0..255 for convenience
-
-print('---')
-print("length of text:", len(text))
-print('---')
-#print(tokens)
-print("length of tokens:", len(tokens))
-
 
 def get_stats(ids):
     counts = {}
@@ -33,22 +26,37 @@ def merge(ids, pair, idx):
             i += 1
     return newids
 
-# ---
-vocab_size = 500  # the desired final vocabulary size
-num_merges = vocab_size - 256
-ids = list(tokens)  # copy so we don't destroy the original list
+def perform_bpe():
+    vocab_size = 1500  # the desired final vocabulary size
+    num_merges = vocab_size - 256
+    ids = list(tokens)  # copy so we don't destroy the original list
 
-merges = {}  # (int, int) -> int
-for i in range(num_merges):
-    stats = get_stats(ids)
-    pair = max(stats, key=stats.get)
-    idx = 256 + i
-    #print(f"merging {pair} into a new token {idx}")
-    ids = merge(ids, pair, idx)
-    merges[pair] = idx
+    merges = {}  # (int, int) -> int
+    for i in range(num_merges):
+        stats = get_stats(ids)
+        pair = max(stats, key=stats.get)
+        idx = 256 + i
+        #print(f"merging {pair} into a new token {idx}")
+        ids = merge(ids, pair, idx)
+        merges[pair] = idx
 
-#print("tokens length:", len(tokens))
-#print(ids)
-print("---")
-print("ids length:", len(ids))
-print(f"compression ratio: {len(tokens) / len(ids):.2f}X")
+    print("---")
+    print("ids length:", len(ids))
+    print(f"compression ratio: {len(tokens) / len(ids):.2f}X")
+    
+    return merges, ids, num_merges
+
+if __name__ == "__main__":
+    print('---')
+    print("length of text:", len(text))
+    print('---')
+    #print(tokens)
+    print("length of tokens:", len(tokens))
+    
+    # Run BPE and save results
+    merges, ids, num_merges = perform_bpe()
+
+    # Save merges and vocab to a file
+    with open('bpe_results.pkl', 'wb') as f:
+        pickle.dump((merges, ids, num_merges), f)
+
