@@ -1,4 +1,5 @@
 import pickle
+from tqdm import tqdm  # Import tqdm for progress bar
 
 # Read text from a file
 with open('text_file.txt', 'r', encoding='utf-8') as file:
@@ -27,16 +28,16 @@ def merge(ids, pair, idx):
     return newids
 
 def perform_bpe():
-    vocab_size = 1500  # the desired final vocabulary size
+    vocab_size = 3500  # the desired final vocabulary size
     num_merges = vocab_size - 256
     ids = list(tokens)  # copy so we don't destroy the original list
 
     merges = {}  # (int, int) -> int
-    for i in range(num_merges):
+    # Use tqdm to add a progress bar
+    for i in tqdm(range(num_merges), desc="Performing BPE", unit="merge"):
         stats = get_stats(ids)
         pair = max(stats, key=stats.get)
         idx = 256 + i
-        #print(f"merging {pair} into a new token {idx}")
         ids = merge(ids, pair, idx)
         merges[pair] = idx
 
@@ -50,7 +51,6 @@ if __name__ == "__main__":
     print('---')
     print("length of text:", len(text))
     print('---')
-    #print(tokens)
     print("length of tokens:", len(tokens))
     
     # Run BPE and save results
