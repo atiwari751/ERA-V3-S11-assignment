@@ -14,7 +14,7 @@ tokens = re.findall(gpt2pat, text)
 
 # Convert tokens to a list of integers in range 0..255 for convenience
 tokens = [ord(char) for token in tokens for char in token]
-print(tokens)
+#print(tokens)
 
 def get_stats(ids):
     counts = {}
@@ -62,9 +62,9 @@ if __name__ == "__main__":
     print("length of tokens:", len(tokens))
     
     # Run BPE and save results
-    #merges, ids, num_merges = perform_bpe()
+    merges, ids, num_merges = perform_bpe()
 
     # Save merges and vocab to a file
-    #with open('bpe_results.pkl', 'wb') as f:
-        #pickle.dump((merges, ids, num_merges), f)
+    with open('bpe_results.pkl', 'wb') as f:
+        pickle.dump((merges, ids, num_merges), f)
 
