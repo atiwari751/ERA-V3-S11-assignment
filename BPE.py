@@ -1,12 +1,20 @@
 import pickle
+import regex as re
 from tqdm import tqdm  # Import tqdm for progress bar
 
 # Read text from a file
-with open('text_file.txt', 'r', encoding='utf-8') as file:
+with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
-tokens = text.encode("utf-8")  # raw bytes
-tokens = list(map(int, tokens))  # convert to a list of integers in range 0..255 for convenience
+# Define the GPT-2 regex pattern
+gpt2pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+
+# Apply the regex pattern to tokenize the text
+tokens = re.findall(gpt2pat, text)
+
+# Convert tokens to a list of integers in range 0..255 for convenience
+tokens = [ord(char) for token in tokens for char in token]
+print(tokens)
 
 def get_stats(ids):
     counts = {}
@@ -28,7 +36,7 @@ def merge(ids, pair, idx):
     return newids
 
 def perform_bpe():
-    vocab_size = 3500  # the desired final vocabulary size
+    vocab_size = 1500  # the desired final vocabulary size
     num_merges = vocab_size - 256
     ids = list(tokens)  # copy so we don't destroy the original list
 
@@ -54,9 +62,9 @@ if __name__ == "__main__":
     print("length of tokens:", len(tokens))
     
     # Run BPE and save results
-    merges, ids, num_merges = perform_bpe()
+    #merges, ids, num_merges = perform_bpe()
 
     # Save merges and vocab to a file
-    with open('bpe_results.pkl', 'wb') as f:
-        pickle.dump((merges, ids, num_merges), f)
+    #with open('bpe_results.pkl', 'wb') as f:
+        #pickle.dump((merges, ids, num_merges), f)
 
