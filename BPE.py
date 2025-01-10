@@ -3,7 +3,7 @@ import regex as re
 from tqdm import tqdm
 
 # Read text from a file
-with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
+with open('text_file.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
 # Define the GPT-2 regex pattern
