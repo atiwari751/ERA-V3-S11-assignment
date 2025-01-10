@@ -3,11 +3,45 @@ import regex as re
 from tqdm import tqdm
 
 # Read text from a file
-with open('text_file_eng_long.txt', 'r', encoding='utf-8') as file:
+with open('text_file.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
-# Define the GPT-2 regex pattern
-gpt2pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+# Hindi-focused pattern
+gpt2pat = re.compile(r"""
+    # Simpler syllable-based grouping
+    (?:[\p{Devanagari}&&[क-ह]][ा-ौ\u093C\u0901-\u0903]?)  # Consonant + modifiers
+    # This part matches:
+    #   - Any consonant [क-ह]
+    #   - Optionally followed by:
+    #     - maatras [ा-ौ] (like ा ि ी ु ू े ै ो ौ)
+    #     - OR nukta (\u093C = ़)
+    #     - OR chandrabindu (\u0901 = ँ)
+    #     - OR anusvara (\u0902 = ं)
+    #     - OR visarga (\u0903 = ः)
+    
+    |[\u0905-\u0914]    # Independent vowels
+    # Matches standalone vowels like अ आ इ ई उ ऊ ए ऐ ओ औ
+    
+    |[क-ह]्[क-ह]       # Basic conjuncts
+    # Matches basic consonant conjuncts:
+    #   - First consonant + halant (्) + second consonant
+    #   - Examples: क्क, न्न, त्त
+    
+    |\p{N}+            # Numbers
+    # Matches one or more digits
+    
+    |\s+               # Whitespace
+    # Matches spaces, tabs, newlines
+    
+    |[।॥]             # Punctuation
+    # Matches Hindi punctuation marks
+    
+    |[^\s\p{Devanagari}\p{N}]+  # Other characters
+    # Matches any sequence of characters that aren't:
+    #   - whitespace
+    #   - Devanagari script
+    #   - numbers
+    """, re.VERBOSE)
 
 # Apply the regex pattern to the raw text to tokenize it
 tokens = re.findall(gpt2pat, text)
