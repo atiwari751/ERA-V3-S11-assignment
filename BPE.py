@@ -2,7 +2,7 @@ import pickle
 from tqdm import tqdm  # Import tqdm for progress bar
 
 # Read text from a file
-with open('text_file.txt', 'r', encoding='utf-8') as file:
+with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
 tokens = text.encode("utf-8")  # raw bytes
