@@ -1,5 +1,6 @@
 import pickle
 from BPE import get_stats, merge
+import regex as re
 
 # Load merges and vocab from the file
 with open('bpe_results.pkl', 'rb') as f:
@@ -11,8 +12,8 @@ for (p0, p1), idx in merges.items():
 
 def decode(ids):
     # given ids (list of integers), return Python string
-    tokens = [vocab[idx].decode("utf-8", errors="replace") for idx in ids]
-    text = '    '.join(tokens)  # Join tokens with a single space
+    tokens = [vocab[idx] for idx in ids]
+    text = b''.join(tokens).decode("utf-8", errors="replace")
     
     # Write the decoded text to a new file
     with open('decoded_output.txt', 'w', encoding='utf-8') as f:
@@ -30,8 +31,15 @@ def encode():
     with open('encode_input.txt', 'r', encoding='utf-8') as f:
         text = f.read()
     
-    # given a string, return list of integers (the tokens)
-    tokens = list(text.encode("utf-8"))
+    # Tokenize the text using the regex pattern
+    tokens = re.findall(gpt2pat, text)
+    
+    # Convert tokens to byte sequences
+    byte_tokens = [token.encode('utf-8') for token in tokens]
+    
+    # Flatten the list of byte sequences into a single list of bytes
+    tokens = [b for token in byte_tokens for b in token]
+    
     while len(tokens) >= 2:
         stats = get_stats(tokens)
         pair = min(stats, key=lambda p: merges.get(p, float("inf")))
@@ -43,5 +51,5 @@ def encode():
     return tokens
 
 # Example: Encode text from a file
-#encoded_tokens = encode()
-#print(encoded_tokens)
+encoded_tokens = encode()
+print(encoded_tokens)

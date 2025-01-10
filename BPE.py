@@ -1,6 +1,6 @@
 import pickle
 import regex as re
-from tqdm import tqdm  # Import tqdm for progress bar
+from tqdm import tqdm
 
 # Read text from a file
 with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
@@ -9,12 +9,14 @@ with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
 # Define the GPT-2 regex pattern
 gpt2pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
 
-# Apply the regex pattern to tokenize the text
+# Tokenize the text using the regex pattern
 tokens = re.findall(gpt2pat, text)
 
-# Convert tokens to a list of integers in range 0..255 for convenience
-tokens = [ord(char) for token in tokens for char in token]
-#print(tokens)
+# Convert tokens to byte sequences
+byte_tokens = [token.encode('utf-8') for token in tokens]
+
+# Flatten the list of byte sequences into a single list of bytes
+tokens = [b for token in byte_tokens for b in token]
 
 def get_stats(ids):
     counts = {}
@@ -23,7 +25,6 @@ def get_stats(ids):
     return counts
 
 def merge(ids, pair, idx):
-    # in the list of ints (ids), replace all consecutive occurrences of pair with the new token idx
     newids = []
     i = 0
     while i < len(ids):
@@ -41,7 +42,6 @@ def perform_bpe():
     ids = list(tokens)  # copy so we don't destroy the original list
 
     merges = {}  # (int, int) -> int
-    # Use tqdm to add a progress bar
     for i in tqdm(range(num_merges), desc="Performing BPE", unit="merge"):
         stats = get_stats(ids)
         pair = max(stats, key=stats.get)
