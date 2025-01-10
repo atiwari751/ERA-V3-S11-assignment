@@ -3,7 +3,7 @@ import regex as re
 from tqdm import tqdm
 
 # Read text from a file
-with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
+with open('text_file_eng_long.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
 # Define the GPT-2 regex pattern
@@ -50,7 +50,7 @@ def merge(token_list, pair, idx):
     return newids
 
 def perform_bpe():
-    vocab_size = 1500  # the desired final vocabulary size
+    vocab_size = 3500  # the desired final vocabulary size
     num_merges = vocab_size - 256
     token_list = list(tokens)  # copy so we don't destroy the original list
     
