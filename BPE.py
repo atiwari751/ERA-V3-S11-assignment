@@ -9,51 +9,82 @@ with open('text_file_eng.txt', 'r', encoding='utf-8') as file:
 # Define the GPT-2 regex pattern
 gpt2pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
 
-# Tokenize the text using the regex pattern
+# Apply the regex pattern to the raw text to tokenize it
 tokens = re.findall(gpt2pat, text)
 
 # Convert tokens to byte sequences
 byte_tokens = [token.encode('utf-8') for token in tokens]
 
-# Flatten the list of byte sequences into a single list of bytes
-tokens = [b for token in byte_tokens for b in token]
+# Create a list of byte sequences, each representing a token
+tokens = [list(token) for token in byte_tokens]
 
-def get_stats(ids):
+def get_stats(token_list):
+    """Count frequency of pairs across all tokens"""
     counts = {}
-    for pair in zip(ids, ids[1:]):
-        counts[pair] = counts.get(pair, 0) + 1
+    # Count pairs within each token
+    for token in token_list:
+        if len(token) < 2:
+            continue
+        for pair in zip(token, token[1:]):
+            counts[pair] = counts.get(pair, 0) + 1
     return counts
 
-def merge(ids, pair, idx):
+def merge(token_list, pair, idx):
+    """Merge all occurrences of pair within each token"""
     newids = []
-    i = 0
-    while i < len(ids):
-        if i < len(ids) - 1 and ids[i] == pair[0] and ids[i+1] == pair[1]:
-            newids.append(idx)
-            i += 2
-        else:
-            newids.append(ids[i])
-            i += 1
+    for token in token_list:
+        if len(token) < 2:
+            newids.append(token)
+            continue
+            
+        new_token = []
+        i = 0
+        while i < len(token):
+            if i < len(token) - 1 and (token[i], token[i+1]) == pair:
+                new_token.append(idx)
+                i += 2
+            else:
+                new_token.append(token[i])
+                i += 1
+        newids.append(new_token)
     return newids
 
 def perform_bpe():
     vocab_size = 1500  # the desired final vocabulary size
     num_merges = vocab_size - 256
-    ids = list(tokens)  # copy so we don't destroy the original list
-
+    token_list = list(tokens)  # copy so we don't destroy the original list
+    
+    # Calculate total bytes before compression
+    total_bytes_before = sum(len(token) for token in token_list)
+    
     merges = {}  # (int, int) -> int
     for i in tqdm(range(num_merges), desc="Performing BPE", unit="merge"):
-        stats = get_stats(ids)
+        stats = get_stats(token_list)
+        if not stats:  # No more pairs to merge
+            break
+            
+        # Find most frequent pair
         pair = max(stats, key=stats.get)
         idx = 256 + i
-        ids = merge(ids, pair, idx)
+        
+        # Perform the merge
+        token_list = merge(token_list, pair, idx)
         merges[pair] = idx
-
-    print("---")
-    print("ids length:", len(ids))
-    print(f"compression ratio: {len(tokens) / len(ids):.2f}X")
     
-    return merges, ids, num_merges
+    # Calculate total bytes after compression
+    total_bytes_after = sum(len(token) for token in token_list)
+    
+    print("---")
+    print("Total bytes before:", total_bytes_before)
+    print("Total bytes after:", total_bytes_after)
+    print(f"Compression ratio: {total_bytes_before / total_bytes_after:.2f}X")
+    
+    # Flatten for storage, but maintain token boundaries
+    flat_ids = []
+    for token in token_list:
+        flat_ids.extend(token)
+    
+    return merges, flat_ids, num_merges
 
 if __name__ == "__main__":
     print('---')
