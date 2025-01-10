@@ -21,7 +21,7 @@ def decode(ids):
     return text
 
 # Example: Decode a list of IDs
-set_of_ids = [25, 345, 992, 1353]
+set_of_ids = [297, 562, 436, 418, 310, 822, 319, 2034, 290, 489, 314, 73, 39, 307, 1611, 1990, 636, 104, 512, 101, 1884, 314, 73, 116, 447, 418, 322, 636, 1133, 411, 1885, 405, 108, 501, 1136, 436, 418, 276, 112, 858, 268, 46]
 decoded_text = decode(set_of_ids)  # Pass the list of IDs
 print(decoded_text)
 
@@ -43,5 +43,5 @@ def encode():
     return tokens
 
 # Example: Encode text from a file
-#encoded_tokens = encode()
-#print(encoded_tokens)
+encoded_tokens = encode()
+print(encoded_tokens)
