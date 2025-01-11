@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: Hindi BPE Tokenizer
 emoji: 🔤
@@ -23,6 +24,9 @@ A Byte-Pair Encoding tokenizer for Hindi text, implemented using Streamlit.
 ## Features
 - Tokenizes Hindi text using BPE algorithm
 - Visualizes the tokenization process
+=======
+# Hindi Tokenizer 
+>>>>>>> 9ca9016178d264c3f82d426a5749f3de8e97fab1
 
 ## Dataset
 
