@@ -3,7 +3,7 @@ import regex as re
 from tqdm import tqdm
 
 # Read text from a file
-with open('text_file_eng_long.txt', 'r', encoding='utf-8') as file:
+with open('text_file.txt', 'r', encoding='utf-8') as file:
     text = file.read()
 
 # Hindi-focused pattern
@@ -88,9 +88,11 @@ def perform_bpe():
 
 if __name__ == "__main__":
     print('---')
-    print("length of text:", len(text))
+    print("length of text (characters):", len(text))
+    print("length of text (words):", len(text.split()))
     print('---')
     print("length of tokens:", len(tokens))
+    #print("sample tokens:", tokens[:5])  # Show first 5 tokens
     
     # Run BPE and save results
     merges, ids, num_merges = perform_bpe()
