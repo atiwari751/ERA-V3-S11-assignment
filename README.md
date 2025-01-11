@@ -1,13 +1,21 @@
 ---
 title: Hindi BPE Tokenizer
-emoji: 🇮🇳
-colorFrom: orange
+emoji: 🔤
+colorFrom: blue
 colorTo: green
 sdk: streamlit
 sdk_version: 1.32.0
 app_file: app.py
 pinned: false
 ---
+
+# Hindi BPE Tokenizer
+A Byte-Pair Encoding tokenizer for Hindi text, implemented using Streamlit.
+
+## Features
+- Tokenizes Hindi text using BPE algorithm
+- Visualizes the tokenization process
+- Supports custom vocabulary
 
 # Hindi BPE Tokenizer
 A Byte-Pair Encoding tokenizer for Hindi text, implemented using Streamlit.
