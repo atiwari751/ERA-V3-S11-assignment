@@ -1,54 +1,31 @@
-<<<<<<< HEAD
----
-title: Hindi BPE Tokenizer
-emoji: 🔤
-colorFrom: blue
-colorTo: green
-sdk: streamlit
-sdk_version: 1.32.0
-app_file: app.py
-pinned: false
----
-
 # Hindi BPE Tokenizer
+
 A Byte-Pair Encoding tokenizer for Hindi text, implemented using Streamlit.
+
+Hugging face app - https://huggingface.co/spaces/atiwari751/Hindi-tokenizer
 
 ## Features
 - Tokenizes Hindi text using BPE algorithm
 - Visualizes the tokenization process
 - Supports custom vocabulary
 
-# Hindi BPE Tokenizer
-A Byte-Pair Encoding tokenizer for Hindi text, implemented using Streamlit.
-
-## Features
-- Tokenizes Hindi text using BPE algorithm
-- Visualizes the tokenization process
-=======
-# Hindi Tokenizer 
->>>>>>> 9ca9016178d264c3f82d426a5749f3de8e97fab1
-
 ## Dataset
-
-The final dataset used for the tokenizer training is found in text_file.txt in the repo. 
 
 There were 2 prime sources which were combined in the .txt file - 
 
 - https://www.kaggle.com/datasets/disisbig/hindi-text-short-summarization-corpus (test dataset)
 - https://hindi.newslaundry.com/report 
 
-length of text (characters): 5933269
+The raw text in the dataset was split into fragments using regex, and these fragments were sent to the BPE algorithm. Some stats - 
 
-length of text (words):      1150937
+Total words in the dataset:      1150937
 
+Total subwords after regex:      1354962
 
-## Results 
+## Vocabulary and Compression Ratio
 
-length of text (words):      1150937
+Total vocabulary: 4000 tokens
 
-length of tokens (regex):    1354962
-
----
 Total bytes before: 14659421
 
 Total bytes after: 1889786
